@@ -8,11 +8,12 @@ pipeline {
 
     stages {
 
-        stage('Clone') {
-            steps {
-                echo "Cloning repository..."
-                git 'https://github.com/princeapyds/tg-devops-demo'
-            }
+stage('Checkout Code') {
+    steps {
+        checkout scm
+    }
+}
+}
         }
 
         stage('Build Docker Image') {
