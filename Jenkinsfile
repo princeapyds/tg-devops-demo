@@ -8,45 +8,37 @@ pipeline {
 
     stages {
 
-        stage('Checkout Code') {
+        stage('Clone') {
             steps {
-                echo "Checking out source code..."
-                checkout scm
+                echo "Cloning repository..."
+                git 'https://github.com/princeapyds/tg-devops-demo'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                echo "Building Docker image..."
+                echo "Building Docker Image..."
                 sh "docker build -t ${IMAGE_NAME} ."
             }
         }
 
         stage('Stop Old Container') {
             steps {
-                echo "Stopping old container if exists..."
-                sh """
-                docker rm -f ${CONTAINER_NAME} || true
-                """
+                script {
+                    sh """
+                    docker rm -f ${CONTAINER_NAME} || true
+                    """
+                }
             }
         }
 
         stage('Run New Container') {
             steps {
-                echo "Starting new container..."
+                echo "Running New Container..."
                 sh """
                 docker run -d -p 5000:5000 --name ${CONTAINER_NAME} ${IMAGE_NAME}
                 """
             }
-        }
-    }
-
-    post {
-        success {
-            echo "Deployment successful!"
-        }
-        failure {
-            echo "Pipeline failed!"
         }
     }
 }
