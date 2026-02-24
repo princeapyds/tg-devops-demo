@@ -8,37 +8,45 @@ pipeline {
 
     stages {
 
-        stage('Clone') {
+        stage('Checkout Code') {
             steps {
-                echo "Cloning repository..."
-                git '<YOUR_GITHUB_REPO_URL>'
+                echo "Checking out source code..."
+                checkout scm
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                echo "Building Docker Image..."
+                echo "Building Docker image..."
                 sh "docker build -t ${IMAGE_NAME} ."
             }
         }
 
         stage('Stop Old Container') {
             steps {
-                script {
-                    sh """
-                    docker rm -f ${CONTAINER_NAME} || true
-                    """
-                }
+                echo "Stopping old container if exists..."
+                sh """
+                docker rm -f ${CONTAINER_NAME} || true
+                """
             }
         }
 
         stage('Run New Container') {
             steps {
-                echo "Running New Container..."
+                echo "Starting new container..."
                 sh """
                 docker run -d -p 5000:5000 --name ${CONTAINER_NAME} ${IMAGE_NAME}
                 """
             }
+        }
+    }
+
+    post {
+        success {
+            echo "Deployment successful!"
+        }
+        failure {
+            echo "Pipeline failed!"
         }
     }
 }
