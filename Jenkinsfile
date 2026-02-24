@@ -13,8 +13,6 @@ stage('Checkout Code') {
         checkout scm
     }
 }
-}
-        }
 
         stage('Build Docker Image') {
             steps {
